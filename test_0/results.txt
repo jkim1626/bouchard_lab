@@ -1,0 +1,41 @@
+TEST 1:
+
+Optimal Parameters: [ 0.          0.1         0.5         2.1203447  42.55929097]
+Minimum Error Achieved: [0.00196255]
+
+--- RMSE Values ---
+LP RMSE: 0.05342701620360167
+LS RMSE: 0.05342706652405672
+
+--- Residual Norms wrt Y (dictionary portion only) ---
+LP dictionary vs Y  : 0.0129288292567332051968831
+LS dictionary vs Y  : 0.0129288292567330334592590
+
+
+
+
+
+TEST 2:
+Optimal Parameters: [1.36994085e-01 1.00000000e-03 5.00000000e-01 2.00000000e+00   5.94230659e+00]
+Minimum Error Achieved: [0.00196255]
+--- RMSE Values ---
+LP RMSE: 0.058412226590635885
+LS RMSE: 0.05841228244653056
+
+--- Residual Norms wrt Y (dictionary portion only) ---
+LP dictionary vs Y  : 0.0166701378716235699972703
+LS dictionary vs Y  : 0.0166701378716234034638166
+
+
+
+
+
+TEST 3:
+Optimal Parameters: [ 0.          0.08985437  0.5         2.32419792 50.        ]
+Minimum Error Achieved: [0.00196255]
+--- RMSE Values ---
+LP RMSE: 0.2421280233786624 
+LS RMSE: 0.2421428713128068
+--- Residual Norms wrt Y (dictionary portion only) ---
+LP dictionary vs Y  : 0.1273654148174710454277658
+LS dictionary vs Y  : 0.1273654148166170896327998
