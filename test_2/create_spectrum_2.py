@@ -19,7 +19,7 @@ def load_metabolites():
     """
 
     # Assume metabolites are in a subdirectory called "Dictionary" 
-    data_folder = "New_Dict"
+    data_folder = "../new_data"
     
     # Assume metabolite files are named/numbered 1,2,3,...20.txt 
     all_files = [os.path.join(data_folder, f"{i}.txt") for i in range(1, 21)]
