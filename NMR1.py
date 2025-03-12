@@ -147,13 +147,13 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
 
 def main():
     data_folder = "new_data"
-    test_folder = "test_3"
-    true_beta_folder = "test_3"
+    test_folder = "test_0"
+    true_beta_folder = "test_0"
     
     count = 0
-    for i in range(1,16):
-        test_file = f"synthetic_spectrum_{i}.txt"
-        true_beta_file = f"spectrum_ratios_{i}.txt"
+    for i in range(1,4):
+        test_file = f"test{i}.txt"
+        true_beta_file = f"answer{i}.txt"
         count = test(data_folder,test_folder,test_file,true_beta_folder,true_beta_file, count)
     
     print(f"\nLow-pass Baseline Filtering outperformed Least Squares in {count} out of 15 cases.")
