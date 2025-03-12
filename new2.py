@@ -32,9 +32,6 @@ def alternating_solver(Y, X, sparse_beta=False,
     Z = np.zeros(m)
 
     for iteration in range(1, max_iter + 1):
-        beta_old = beta.copy()
-        Z_old = Z.copy()
-
         # --- (1) Beta-step ---
         R = Y - Z  # Residual ignoring current baseline
 
@@ -120,7 +117,7 @@ def output(beta_lp, beta_ls, true_beta, rmse_lp, rmse_ls, resid_lp_norm, resid_l
     print(f"LP dictionary vs Y  : {resid_lp_norm:.25f}")
     print(f"LS dictionary vs Y  : {resid_ls_norm:.25f}")
 
-# Main test file
+# Test function
 def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, count):
     num_points = 120001
 
@@ -146,9 +143,9 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
     if rmse_lp < rmse_ls:
         count += 1
 
-    return beta_lp, beta_ls, true_beta, count
+    return count
 
-if __name__ == "__main__":
+def main():
     data_folder = "new_data"
     test_folder = "test_3"
     true_beta_folder = "test_3"
@@ -157,6 +154,9 @@ if __name__ == "__main__":
     for i in range(1,16):
         test_file = f"synthetic_spectrum_{i}.txt"
         true_beta_file = f"spectrum_ratios_{i}.txt"
-        beta_lp, beta_ls, true_beta, count = test(data_folder,test_folder,test_file,true_beta_folder,true_beta_file, count)
+        count = test(data_folder,test_folder,test_file,true_beta_folder,true_beta_file, count)
     
     print(f"\nLow-pass Baseline Filtering outperformed Least Squares in {count} out of 15 cases.")
+
+if __name__ == "__main__":
+    main()
