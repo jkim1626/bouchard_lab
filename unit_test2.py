@@ -33,7 +33,7 @@ def objective_function(params, Y_noisy, Xint):
 def main():
     # Load data
     num_points = 120001  # Assumed number of points in each file
-    data_folder = "New_Dict"
+    data_folder = "new_data"
     all_files = [os.path.join(data_folder, f"{i}.txt") for i in range(1, 6)]
     
     Xint = np.zeros((num_points, len(all_files)))
@@ -74,7 +74,6 @@ def main():
     true_beta_path = os.path.join(true_beta_folder, true_beta_file)
     true_beta = np.loadtxt(true_beta_path, delimiter=',')
     
-    # -- (6b) Calculate RMSE values for both approaches (If "ground truth" is known)
     def rmse(a,b):
         return np.sqrt(np.mean((a - b)**2)) if len(a) == len(b) else np.nan
     

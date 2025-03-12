@@ -48,7 +48,7 @@ def solve_lowpass_with_sparse_beta(
     filter_order=4,
     max_iter=10, 
     tol=1e-6
-):
+    ):
     """
     Approach:
       1) Beta-step:
@@ -112,16 +112,15 @@ def solve_lowpass_with_sparse_beta(
     return beta, Z
 
 # Objective function for PSO to minimize residual error
-def objective_function(beta, params, Y_noisy, Xint):
+def objective_function(beta, Y_noisy, Xint):
     """
     Define loss function.
     'params' represents the variables PSO is optimizing.
     """
-    sparse_beta  = bool(round(params[0]))  # Ensure boolean for sparse_beta
-    alpha_lasso  = params[1]
-    cutoff_freq  = params[2]
-    filter_order = int(round(params[3]))  # Ensure integer for filter order
-    max_iter     = int(round(params[4]))  # Ensure integer for iterations
+    sparse_beta  = bool(round(beta[20]))  # Ensure boolean for sparse_beta
+    alpha_lasso  = beta[21]
+    cutoff_freq  = beta[22]
+    filter_order = int(round(beta[23]))  # Ensure integer for filter order
 
     # Run Deconvolution Algorithm
     beta_lp, Z_lp = solve_lowpass_with_sparse_beta(
@@ -130,7 +129,7 @@ def objective_function(beta, params, Y_noisy, Xint):
         alpha_lasso=alpha_lasso,
         cutoff_freq=cutoff_freq,
         filter_order=filter_order,
-        max_iter=max_iter
+        max_iter=50
     )
 
     # Compute Error as Residual
@@ -207,15 +206,6 @@ def load_Y(num_points, folder, file):
 
 # Main test file 
 def test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_beta_file):
-    """
-    1) Prompt user for parameters (or use default values).
-    2) Load Xint (dictionary of reference spectra).
-    3) Load the experimental data Y 
-    4) Solve Y = Xint * beta + Z with the low-pass approach.
-    5) Calculate and normalize for both LS and LP approaches
-    6) Calculate RMSE values for LS and LP approaches (If using synthetic data)
-    7) Plot and print results.
-    """
 
     # -- (1) Load metabolite files to be added into Xint 
     num_points = 120001  # Assumed number of points in each file
@@ -225,27 +215,34 @@ def test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_b
     # -- (3a) Load the experimental data 
     Y_noisy = load_Y(num_points, test_folder_name, test_file_name)
 
-    # -- (3b) Initialize an array of beta values as 0's
-    beta_initial = np.zeros((0,20))
+    # -- (3b) Solve beta values using least squares technique (for benchmark)
+    beta_ls = solve_beta_least_squares(Xint, Y_noisy)
 
-    # -- (3c) Get parameters from user
+    # -- (3b) Initialize an array of beta values as 0's
+    beta_initial = np.zeros(24)
+
+    # -- (3c) Initialize parameters from user
     n_ref, sparse_beta, alpha_lasso, cutoff_freq, filter_order, num_iter = get_parameters()
-    params = [sparse_beta, alpha_lasso, cutoff_freq, filter_order, num_iter]
+    
+    beta_initial[:20] = beta_ls[:20]
+    beta_initial[20] = sparse_beta
+    beta_initial[21] = alpha_lasso
+    beta_initial[22] = cutoff_freq
+    beta_initial[23] = filter_order
 
     # Run PSO Optimization on Beta Values
     pso = PSO(
-        func=lambda beta_initial: objective_function(beta_initial, params, Y_noisy, Xint), 
-        n_dim=20,
-        pop=30,
-        max_iter=50,
-        lb=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        ub=[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
+        func=lambda beta_initial: objective_function(beta_initial, Y_noisy, Xint), 
+        n_dim=24,
+        pop=15,
+        max_iter=20,
+        lb=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.01, 0.01, 2],
+        ub=[3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,0.1, 0.5, 8],
         w=0.7, c1=1.5, c2=1.5
     )
-    beta_lp,_ = pso.run()
+    solution, _ = pso.run()
 
-    # -- (4) Solve beta values using least squares technique (for benchmark)
-    beta_ls = solve_beta_least_squares(Xint, Y_noisy)
+    beta_lp = solution[:20]
 
     # -- (5a) Compute dictionary-only portion from the low-pass approach amd naive LS approach
     Y_fit_lp_dict = Xint @ beta_lp
@@ -271,7 +268,7 @@ def test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_b
     rmse_ls = rmse(beta_ls, true_beta)
 
     # -- (7a) Print beta values for both approaches and true betas
-    mode_str = "(Low-pass + Lasso)" if bool(round(params[0])) else "(Low-pass, no sparse prior)"
+    mode_str = "(Low-pass + Lasso)" if bool(round(solution[20])) else "(Low-pass, no sparse prior)"
     print("====== Final Results =====")
     print(f"beta_lp {mode_str} vs beta_ls (Unconstrained LS):")
     
@@ -294,13 +291,13 @@ def test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_b
 
 # Change folders/files or add iterations
 def main():
-    data_folder = "New_Dict"
+    data_folder = "new_data"
     test_folder_name = "test_3"
     true_beta_folder = "test_3"
     count = 0
 
     # Iterate through all files and check results 
-    for i in range(1,4):
+    for i in range(1,3):
         test_file_name = f"synthetic_spectrum_{i}.txt"
         true_beta_file = f"spectrum_ratios_{i}.txt"
         rmse_lp, rmse_ls, resid_lp_norm, resid_ls_norm = test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_beta_file)
@@ -308,7 +305,7 @@ def main():
             print(f"\n{test_file_name} has a lower RMSE lp value than RMSE ls \n")
             count += 1
     
-    print(f"Number of files that where LP RMSE was less than LS RMSE: {count}")
+    print(f"\nNumber of files that where LP RMSE was less than LS RMSE: {count}")
 
 if __name__ == "__main__":
     main()

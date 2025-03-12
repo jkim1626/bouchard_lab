@@ -104,7 +104,7 @@ def lorentzian(x, x0, gamma, amplitude):
     """
     return amplitude * ((gamma/2.0)**2 / ((x - x0)**2 + (gamma/2.0)**2))
 
-def add_lorentzian_peaks(Y, lower_level, upper_level, num_points=120001, num_peaks=3, max_gamma=10.0):
+def add_lorentzian_peaks(Y, lower_level, upper_level, num_points=120001, num_peaks=3, gamma_std=100.0):
     """
     Generate a random 1D Lorentzian spectrum of length num_points.
     - Each spectrum has 'num_peaks' random Lorentzian peaks.
@@ -120,7 +120,7 @@ def add_lorentzian_peaks(Y, lower_level, upper_level, num_points=120001, num_pea
     for _ in range(num_peaks):
         # Random center, half-width, amplitude
         center = np.random.uniform(0, num_points)
-        gamma  = np.random.uniform(1.0, max_gamma)
+        gamma  = np.random.normal(100, gamma_std)
         amp    = np.random.uniform(lower_level * np.max(Y), upper_level * np.max(Y))
         spectrum += lorentzian(x, center, gamma, amp)
 
@@ -183,17 +183,14 @@ def main():
     # Loop 5 times to create 5 synthetic spectrum with low noise
     for i in range(1,6):
         Y, metabolite_ratios = create_spectrum(Xint)
-        
+
         # Parameters
-        snr = 50
         num_peaks = random.randint(5,10)
         lower_level = 0.125
         upper_level = 0.375
 
-        Y_noisy = add_noise(Y, snr)
         peaks = add_lorentzian_peaks(Y, lower_level, upper_level, num_points, num_peaks)
-        Y_noisy_with_peaks = Y_noisy + peaks
-
+        Y_noisy_with_peaks = Y + peaks
 
         # Save original and noisy spectra 
         save_file(Y, f"original_{i}")
@@ -205,43 +202,36 @@ def main():
         Y, metabolite_ratios = create_spectrum(Xint)
         
         # Parameters
-        snr = 30
         num_peaks = random.randint(5,10)
         lower_level = 0.375
         upper_level = 0.625
 
-        Y_noisy = add_noise(Y, snr)
         peaks = add_lorentzian_peaks(Y, lower_level, upper_level, num_points, num_peaks)
-        Y_noisy_with_peaks = Y_noisy + peaks
-
+        Y_noisy_with_peaks = Y + peaks
 
         # Save original and noisy spectra 
         save_file(Y, f"original_{i}")
         save_file(Y_noisy_with_peaks, f"synthetic_spectrum_{i}")
         save_file(metabolite_ratios, f"spectrum_ratios_{i}")
-
-        # plot_spectrum(ppm, Y_noisy, Y_noisy_with_peaks, peaks)
 
     # Loop 5 times to create 5 synthetic spectrum with high noise
     for i in range(11,16):
         Y, metabolite_ratios = create_spectrum(Xint)
-        
-        # Parameters
-        snr = 10
-        num_peaks = random.randint(5,10)
-        lower_level = 0.625
-        upper_level = 1.0
 
-        Y_noisy = add_noise(Y, snr)
+        # Parameters
+        # snr = 30
+        num_peaks = random.randint(10,15)
+        lower_level = 0.625
+        upper_level = 1.3
+
+        # Y_noisy = add_noise(Y, snr)
         peaks = add_lorentzian_peaks(Y, lower_level, upper_level, num_points, num_peaks)
-        Y_noisy_with_peaks = Y_noisy + peaks
+        Y_noisy_with_peaks = Y + peaks
 
         # Save original and noisy spectra 
         save_file(Y, f"original_{i}")
         save_file(Y_noisy_with_peaks, f"synthetic_spectrum_{i}")
         save_file(metabolite_ratios, f"spectrum_ratios_{i}")
-
-        # plot_spectrum(ppm, Y_noisy, Y_noisy_with_peaks, peaks)
 
 if __name__ == "__main__":
     main()

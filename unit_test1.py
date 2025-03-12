@@ -313,11 +313,11 @@ def test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_b
 
 # Change folders/files or add iterations
 def main():
-    data_folder = "Dictionary"
-    test_folder_name = "test_3"
-    test_file_name = "synthetic_spectrum_11.txt"
-    true_beta_folder = "test_3"
-    true_beta_file = "spectrum_ratios_11.txt"
+    data_folder = "new_data"
+    test_folder_name = "test_1"
+    test_file_name = "synthetic_spectrum_1.txt"
+    true_beta_folder = "test_1"
+    true_beta_file = "spectrum_ratios_1.txt"
     test(data_folder, test_folder_name, test_file_name, true_beta_folder, true_beta_file)
 
 if __name__ == "__main__":

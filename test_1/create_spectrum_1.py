@@ -99,6 +99,8 @@ def plot_spectrum(ppm, original, snr):
     plt.show()
 
 def main():
+    ppm = np.linspace(-2, 10, 120001)
+
     # Loop 20 times to create 20 synthetic spectrum
     for i in range(1,16):
         # -- (1) Load dictionary of metabolites
@@ -106,6 +108,8 @@ def main():
 
         # -- (2) Create synthetic spectrum by randomly combining a subset of them
         Y, metabolite_ratios = create_spectrum(Xint)
+
+        plot_spectrum(ppm, Y, Y)
 
         # -- (3) Save the final synthetic spcetrum as "synthetic_spectrum.txt"
         save_file(Y, f"synthetic_spectrum_{i}")
