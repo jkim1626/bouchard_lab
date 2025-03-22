@@ -230,7 +230,7 @@ def main():
     count_opt = 0     # Count for optimized LP wins vs LS
     count_opt_vs_lp = 0  # Count for optimized LP outperforming regular LP
     
-    for i in range(1,16):
+    for i in range(16,21):
         print(f"\n\n========== Processing Test Case {i} ==========")
         test_file = f"synthetic_spectrum_{i}.txt"
         true_beta_file = f"spectrum_ratios_{i}.txt"
