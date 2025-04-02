@@ -180,9 +180,8 @@ def main():
     num_points = 120001
     ppm = np.linspace(-2, 10, num_points)
 
-    # Loop 5 times to create 5 synthetic spectrum with low noise
+    """# Loop 5 times to create 5 synthetic spectrum with low noise
     for i in range(1,6):
-        break
         Y, metabolite_ratios = create_spectrum(Xint)
 
         # Parameters
@@ -203,7 +202,6 @@ def main():
         
     # Loop 5 times to create 5 synthetic spectrum with medium noise
     for i in range(6,11):
-        break
         Y, metabolite_ratios = create_spectrum(Xint)
         
         # Parameters
@@ -224,7 +222,6 @@ def main():
 
     # Loop 5 times to create 5 synthetic spectrum with high noise
     for i in range(11,16):
-        break
         Y, metabolite_ratios = create_spectrum(Xint)
 
         # Parameters
@@ -241,11 +238,11 @@ def main():
         # Save original and noisy spectra 
         save_file(Y, f"original_{i}")
         save_file(Y_noisy_with_peaks, f"synthetic_spectrum_{i}")
-        save_file(metabolite_ratios, f"spectrum_ratios_{i}")
+        save_file(metabolite_ratios, f"spectrum_ratios_{i}")"""
 
 
     # Loop 5 times to create 5 synthetic spectrum with high noise
-    for i in range(16,21):
+    for i in range(1,51):
         Y, metabolite_ratios = create_spectrum(Xint)
 
         # Parameters
