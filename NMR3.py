@@ -406,7 +406,7 @@ def main():
     true_beta = results['true_beta']
     
     # Generate ppm scale (assumes 120001 points spanning -2 to 10 ppm)
-    ppm = np.linspace(-2, 10, len(Y))
+    ppm = np.linspace(10, -2, len(Y))
     
     # Generate Figures
     plot_spectrum_fit_comparison(Y, Xint, beta_opt, results['Z_opt'], beta_ls, ppm)

@@ -5,6 +5,8 @@ import pandas as pd
 from scipy.signal import butter, filtfilt, find_peaks
 from sklearn.linear_model import Lasso
 from scipy.optimize import nnls, minimize
+from sklearn.linear_model import LinearRegression
+import nmrglue as ng
 
 # Low-Pass Baseline Filtering
 def butter_lowpass_filter(signal, cutoff_freq, order=4):
@@ -148,7 +150,7 @@ def output(beta_lp, beta_opt, beta_ls, true_beta, rmse_lp, rmse_opt, rmse_ls, re
     print(f"Optimized + baseline vs Y: {resid_opt_norm:.25f}")
     print(f"LS vs Y                 : {resid_ls_norm:.25f}")
 
-# Existing Plotting Functions for a Single Spectrum
+# Plotting Functions for a Single Spectrum
 def plot_spectrum_fit_comparison(Y, Xint, beta_opt, Z_opt, beta_ls, ppm):
     # Reconstructed spectra
     recon_new = Xint @ beta_opt + Z_opt
@@ -307,7 +309,7 @@ def display_summary_tables(true_beta, beta_opt, beta_ls, rmse_opt, rmse_ls):
     print("\nTable 2: Metabolite-by-Metabolite Concentration Comparison")
     print(df_metabolites.to_string(index=False))
 
-# New Function: Plot RMSE comparison across all 50 samples
+# Plot RMSE comparison across all 50 samples
 def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
     samples = np.arange(1, len(rmse_lp_list)+1)
     plt.figure(figsize=(10, 6))
@@ -321,7 +323,7 @@ def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
     plt.grid(True)
     plt.show()
 
-# New Function: Display a 50 x 3 RMSE Table
+# Display a RMSE Table for each sample 
 def display_rmse_table(rmse_lp_list, rmse_ls_list):
     samples = np.arange(1, len(rmse_lp_list)+1)
     df = pd.DataFrame({
@@ -333,7 +335,7 @@ def display_rmse_table(rmse_lp_list, rmse_ls_list):
     print("\nRMSE Table (50 x 3):")
     print(df.to_string())
 
-# New Function: Display Concentration Comparison Table (20 x 4)
+# Display Concentration Comparison Table
 def display_concentration_comparison_table(true_beta, beta_lp, beta_ls, beta_opt):
     num_metabolites = len(true_beta)
     metabolites = [f"Metabolite {i+1}" for i in range(num_metabolites)]
@@ -347,7 +349,43 @@ def display_concentration_comparison_table(true_beta, beta_lp, beta_ls, beta_opt
     print("\nConcentration Comparison Table (20 x 4):")
     print(df.to_string())
 
-# Modified test function to return additional outputs for plotting
+def run_NMRglue(Xint, Y):
+    """
+    Calculate the coefficients of the metabolites using linear regression.
+
+    Parameters:
+    Xint (numpy.ndarray): Reference spectra, shape (120001, 20)
+    Y (numpy.ndarray): Experimental spectrum, shape (120001,)
+
+    Returns:
+    numpy.ndarray: Beta values (coefficients) of metabolites, shape (20,)
+    """
+
+    # Ensure the input spectra are numpy arrays
+    Xint = np.asarray(Xint)
+    Y = np.asarray(Y)
+    
+    # Check if the dimensions are correct
+    if Xint.shape[0] != Y.shape[0]:
+        raise ValueError("Number of rows in Xint must match the length of Y (120001).")
+    
+    if Xint.shape[1] != 20:
+        raise ValueError("Xint must have 20 columns representing 20 metabolites.")
+    
+    # Normalize the spectra (optional but recommended)
+    Xint_normalized = Xint / np.linalg.norm(Xint, axis=0)
+    Y_normalized = Y / np.linalg.norm(Y)
+    
+    # Fit a linear regression model
+    model = LinearRegression(fit_intercept=False)  # No intercept since spectra are zero-centered
+    model.fit(Xint_normalized, Y_normalized)
+    
+    # Get the beta coefficients (metabolite coefficients)
+    beta_values = model.coef_
+    
+    return beta_values
+
+# Main test function 
 def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, count_lp, count_opt):
     num_points = 120001
 
@@ -367,14 +405,21 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
     beta_lp, Z_lp = alternating_solver(Y, Xint, sparse_beta=False, alpha_lasso=0.01, 
                                         cutoff_freq=0.01, filter_order=4, max_iter=10, tol=1e-6)
     beta_ls = solve_beta_least_squares(Xint, Y)
-    
+    beta_glue = run_NMRglue(Xint, Y)
+
     # Apply post-optimization to refine beta values
     beta_opt, Z_opt = optimize_beta_post_process(Y, Xint, beta_lp, Z_lp)
 
-    rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
+    """rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
         Y, Xint, beta_ls, beta_lp, beta_opt, true_beta, Z_lp, Z_opt)
     
     output(beta_lp, beta_opt, beta_ls, true_beta, rmse_lp, rmse_opt, rmse_ls, 
+           resid_lp_norm, resid_opt_norm, resid_ls_norm)"""
+    
+    rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
+        Y, Xint, beta_glue, beta_lp, beta_opt, true_beta, Z_lp, Z_opt)
+    
+    output(beta_lp, beta_opt, beta_glue, true_beta, rmse_lp, rmse_opt, rmse_ls, 
            resid_lp_norm, resid_opt_norm, resid_ls_norm)
     
     if rmse_lp < rmse_ls:
@@ -402,6 +447,7 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
         'true_beta': true_beta
     }
     return count_lp, count_opt, results
+
 
 def main():
     data_folder = "new_data"
