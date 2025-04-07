@@ -426,23 +426,16 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
 
     # Run Alternating Solver and Naive LS approach
     beta_lp, Z_lp = alternating_solver(Y, Xint, sparse_beta=False, alpha_lasso=0.01, 
-                                        cutoff_freq=0.01, filter_order=4, max_iter=10, tol=1e-6)
+                                        cutoff_freq=0.01, filter_order=4, max_iter=50, tol=1e-6)
     beta_ls = solve_beta_least_squares(Xint, Y)
-    beta_lmfit = run_lmfit(Xint, Y)
 
     # Apply post-optimization to refine beta values
     beta_opt, Z_opt = optimize_beta_post_process(Y, Xint, beta_lp, Z_lp)
 
-    """rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
+    rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
         Y, Xint, beta_ls, beta_lp, beta_opt, true_beta, Z_lp, Z_opt)
     
     output(beta_lp, beta_opt, beta_ls, true_beta, rmse_lp, rmse_opt, rmse_ls, 
-           resid_lp_norm, resid_opt_norm, resid_ls_norm)"""
-    
-    rmse_lp, rmse_opt, rmse_ls, resid_lp_norm, resid_opt_norm, resid_ls_norm = calc_scores(
-        Y, Xint, beta_lmfit, beta_lp, beta_opt, true_beta, Z_lp, Z_opt)
-    
-    output(beta_lp, beta_opt, beta_lmfit, true_beta, rmse_lp, rmse_opt, rmse_ls, 
            resid_lp_norm, resid_opt_norm, resid_ls_norm)
     
     if rmse_lp < rmse_ls:
@@ -473,9 +466,9 @@ def test(data_folder, test_folder, test_file, true_beta_folder, true_beta_file, 
 
 
 def main():
-    data_folder = "new_data"
-    test_folder = "test_3"
-    true_beta_folder = "test_3"
+    data_folder = "normalized_data"
+    test_folder = "synthetic_spectra"
+    true_beta_folder = "synthetic_spectra"
     
     count_lp = 0      
     count_opt = 0     
