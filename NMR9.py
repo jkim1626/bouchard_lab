@@ -1,10 +1,21 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.signal import butter, filtfilt, find_peaks
+from scipy.signal import butter, filtfilt
 from scipy.optimize import nnls
-from sklearn.linear_model import LinearRegression
+from pathlib import Path
+
+# Get the desktop path
+DESKTOP_PATH = str(Path.home() / "Desktop")
+FIGURES_PATH = os.path.join(DESKTOP_PATH, "nmr_figures")
+
+# Create the figures directory if it doesn't exist
+os.makedirs(FIGURES_PATH, exist_ok=True)
+
+# Function to save figures
+def save_figure(name):
+    filename = os.path.join(FIGURES_PATH, f"{name}.pdf")
+    plt.savefig(filename, format='pdf', bbox_inches='tight')
 
 # Low-Pass Baseline Filtering
 def butter_lowpass_filter(signal, cutoff_freq, order=4):
@@ -13,11 +24,22 @@ def butter_lowpass_filter(signal, cutoff_freq, order=4):
     return filtered
 
 # Alternating Solver: (Beta-step) + (Z-step)
-def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=4, max_iter=50, tol=1e-6):
+def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=2, max_iter=50, tol=1e-6):
     Y = Y.flatten()
     m, n = X.shape
+
+    if len(Y) != m:
+        raise ValueError(f"Dimension mismatch: Y has length {len(Y)}, X has {m} rows")
+
     beta = np.zeros(n)
     Z = np.zeros(m)
+
+    if not 0 < cutoff_freq < 1:
+        raise ValueError(f"Cutoff frequency must be between 0 and 1. Got {cutoff_freq}.")
+    if filter_order < 1:
+        raise ValueError(f"Filter order must be at least 1. Got {filter_order}.")
+    if max_iter < 1:
+        raise ValueError(f"Max iterations must be at least 1. Got {max_iter}.")
 
     for iteration in range(1, max_iter + 1):
         # (1) Beta-step
@@ -41,8 +63,13 @@ def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=4, max_iter=50, tol=
 
 # Load metabolite files to create Xint dictionary
 def load_Xint(num_points, metabolite_files):    
+    if not metabolite_files:
+        raise ValueError("No metabolite files provided.")
+    
     Xint = np.zeros((num_points, len(metabolite_files)))
     for i, file_path in enumerate(metabolite_files):
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Metabolite file not found: {file_path}")
         data = np.loadtxt(file_path, delimiter=',')
         if data.shape[0] != num_points:
             raise ValueError(f"Dimension mismatch: {file_path} has {data.shape[0]} points, expected {num_points}")
@@ -51,6 +78,9 @@ def load_Xint(num_points, metabolite_files):
 
 # Load experimental file into Y
 def load_Y(num_points, file_path):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Experimental data file not found: {file_path}")
+
     Y_noisy = np.loadtxt(file_path, delimiter=',')
     if len(Y_noisy) != num_points: 
         raise ValueError(f"Experimental data has length {len(Y_noisy)}, but Xint expects length {num_points}.")
@@ -59,7 +89,9 @@ def load_Y(num_points, file_path):
 # Calculate the RMSE and residual scores of the algorithms
 def calc_scores(Y, Xint, beta_ls, beta_lp, Z_lp, true_beta):
     def rmse(a, b):
-        return np.sqrt(np.mean((a - b)**2)) if len(a) == len(b) else np.nan
+        if len(a) != len(b):
+            raise ValueError(f"Arrays must have same length. Got {len(a)} and {len(b)}.")
+        return np.sqrt(np.mean((a - b)**2))
     
     rmse_lp = rmse(true_beta, beta_lp)
     rmse_ls = rmse(true_beta, beta_ls)
@@ -101,6 +133,9 @@ def calculate_r_squared(true_values, predicted_values):
 
 # Calculate global R^2 value across all samples
 def calculate_global_r_squared(all_true_values, all_predicted_values):
+    if len(all_true_values) != len(all_predicted_values):
+        raise ValueError(f"Arrays must have same length. Got {len(all_true_values)} and {len(all_predicted_values)}.")
+
     # Flatten all samples into single arrays
     true_flat = np.concatenate(all_true_values)
     pred_flat = np.concatenate(all_predicted_values)
@@ -140,6 +175,10 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, num_files
     plt.title("Residuals")
     plt.legend()
     plt.tight_layout()
+    
+    # Save the figure
+    save_figure(f"spectrum_fit_comparison_sample_{num_files}")
+    
     plt.show()
 
 # Plotting Functions for Peak Identification
@@ -151,7 +190,7 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     # For demonstration, we use the simulated spectrum Y as the "true" spectrum.
     # Find peaks in a zoomed-in region.
     # Let's choose a zoom region from 4 to 6 ppm.
-    idx_zoom = np.where((ppm >= 4) & (ppm <= 6))[0]
+    idx_zoom = np.where((ppm >= 2) & (ppm <= 4))[0]
     ppm_zoom = ppm[idx_zoom]
     Y_zoom = Y[idx_zoom]
     recon_lp_zoom = recon_lp[idx_zoom]
@@ -164,9 +203,13 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
-    plt.title("Peak Identification in Zoomed Region (4-6 ppm)")
+    plt.title("Peak Identification in Zoomed Region (2-4 ppm)")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
     plt.tight_layout()
+    
+    # Save the figure
+    save_figure("peak_identification_zoomed")
+    
     plt.show()
 
 # Plotting Functions for Concentration Accuracy
@@ -185,6 +228,10 @@ def plot_concentration_accuracy(true_beta, beta_lp, beta_ls, num_files):
     plt.title(f"Concentration Prediction Accuracy for Sample {num_files}")
     plt.legend()
     plt.tight_layout()
+    
+    # Save the figure
+    save_figure(f"concentration_accuracy_sample_{num_files}")
+    
     plt.show()
 
 # Plotting Functions for Residual/Error per Metabolite
@@ -204,6 +251,10 @@ def plot_residual_error(true_beta, beta_lp, beta_ls, num_files):
     plt.xticks(metabolites)
     plt.legend()
     plt.tight_layout()
+    
+    # Save the figure
+    save_figure(f"residual_error_sample_{num_files}")
+    
     plt.show()
 
 # Plotting Functions for Performance Metrics
@@ -217,7 +268,6 @@ def plot_performance_metrics(rmse_lp, rmse_ls, true_beta, beta_lp, beta_ls, num_
     # Panel A: RMSE Comparison
     methods = ["Alternating Solver", "Least Squares"]
     rmse_values = [rmse_lp, rmse_ls]
-    colors = ['c', 'r']
     
     axs[0].bar(methods, rmse_values, color=['c', (0.8, 0, 0, 0.5)])
     axs[0].set_ylabel("RMSE (Intensity Units)")
@@ -230,6 +280,10 @@ def plot_performance_metrics(rmse_lp, rmse_ls, true_beta, beta_lp, beta_ls, num_
     axs[1].set_title(f"R² Comparison for Sample {num_files}")
     
     plt.tight_layout()
+    
+    # Save the figure
+    save_figure(f"performance_metrics_sample_{num_files}")
+    
     plt.show()
 
 # Display summary tables with RMSE and R^2 values
@@ -280,6 +334,13 @@ def display_summary_tables(num_files, true_beta, beta_lp, beta_ls, rmse_lp, rmse
     
 # Plot RMSE comparison across all samples
 def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
+    if not rmse_lp_list or not rmse_ls_list:
+        print("Error: Empty RMSE lists provided")
+        return
+        
+    if len(rmse_lp_list) != len(rmse_ls_list):
+        print(f"Warning: RMSE lists have different lengths ({len(rmse_lp_list)} vs {len(rmse_ls_list)})")
+    
     samples = np.arange(1, len(rmse_lp_list)+1)
     plt.figure(figsize=(12, 8))
     plt.plot(samples, rmse_lp_list, marker='o', linestyle='-', color='c', label='Alternating Solver', alpha=0.8)
@@ -290,10 +351,21 @@ def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
     plt.xlim(0, len(rmse_lp_list)+1)
     plt.legend()
     plt.grid(True, alpha=0.3)
+    
+    # Save the figure
+    save_figure("rmse_comparison_all_samples")
+    
     plt.show()
 
 # Plot R^2 comparison across all samples
-def plot_r2_comparison_all_samples(r2_lp_list, r2_ls_list):
+def plot_r2_comparison_all_samples(r2_lp_list, r2_ls_list):    
+    if not r2_lp_list or not r2_ls_list:
+        print("Error: Empty R² lists provided")
+        return
+        
+    if len(r2_lp_list) != len(r2_ls_list):
+        print(f"Warning: R² lists have different lengths ({len(r2_lp_list)} vs {len(r2_ls_list)})")
+    
     samples = np.arange(1, len(r2_lp_list) + 1)
     
     # Calculate running averages
@@ -326,10 +398,21 @@ def plot_r2_comparison_all_samples(r2_lp_list, r2_ls_list):
     plt.ylim(0, 1.05)  # R² is between 0 and 1
     plt.legend()
     plt.grid(True, alpha=0.3)
+    
+    # Save the figure
+    save_figure("r2_running_average_comparison")
+    
     plt.show()
 
 # Display a RMSE Table for each sample 
 def display_rmse_table(rmse_lp_list, rmse_ls_list):
+    if not rmse_lp_list or not rmse_ls_list:
+        print("Error: Empty RMSE lists provided")
+        return
+        
+    if len(rmse_lp_list) != len(rmse_ls_list):
+        print(f"Warning: RMSE lists have different lengths ({len(rmse_lp_list)} vs {len(rmse_ls_list)})")
+    
     print(f"\nRMSE Table over {len(rmse_lp_list)} samples:")
     print("Sample \t Low Pass RMSE \t Least Squares RMSE")
     for i in range(len(rmse_lp_list)):
@@ -337,6 +420,9 @@ def display_rmse_table(rmse_lp_list, rmse_ls_list):
 
 # Display Concentration Comparison Table
 def display_concentration_comparison_table(true_beta, beta_lp, beta_ls, num_files):
+    if len(true_beta) != len(beta_lp) or len(true_beta) != len(beta_ls):
+        print(f"Warning: Beta arrays have different lengths: true={len(true_beta)}, lp={len(beta_lp)}, ls={len(beta_ls)}")
+    
     num_metabolites = len(true_beta)
     print(f"\nConcentration Comparison Table for sample {num_files}:")
     print(f"Metabolite \t True Concentration \t Alternating Solver \t Least Squares")
@@ -344,10 +430,14 @@ def display_concentration_comparison_table(true_beta, beta_lp, beta_ls, num_file
         print(f"{i+1} \t\t {true_beta[i]:.3f} \t\t\t {beta_lp[i]:.3f} \t\t\t {beta_ls[i]:.3f}")
 
 # Main test function 
-def test(Xint, num_points, test_folder, test_file, true_beta_folder, true_beta_file, count_lp_vs_ls):    
+def test(Xint, num_points, test_folder, test_file, true_beta_folder, true_beta_file, count_lp_vs_ls):        
     # Load Experimental Data
     Y_path = os.path.join(test_folder, test_file)
-    Y = load_Y(num_points, Y_path)
+    try:
+        Y = load_Y(num_points, Y_path)
+    except FileNotFoundError as e:
+        print(f"Error: Test file not found: {Y_path}")
+        return count_lp_vs_ls, None
 
     # Load True Beta Values
     beta_path = os.path.join(true_beta_folder, true_beta_file)
@@ -381,10 +471,23 @@ def test(Xint, num_points, test_folder, test_file, true_beta_folder, true_beta_f
     }
     return count_lp_vs_ls, results
 
-def main():
+def main():    
     data_folder = "normalized_data"
     test_folder = "synthetic_spectrum"
     true_beta_folder = "synthetic_spectrum"
+    
+    # Check if required folders exist
+    if not os.path.exists(data_folder):
+        print(f"Error: Data folder not found: {data_folder}")
+        os.makedirs(data_folder, exist_ok=True)
+        
+    if not os.path.exists(test_folder):
+        print(f"Error: Test folder not found: {test_folder}")
+        os.makedirs(test_folder, exist_ok=True)
+        
+    if not os.path.exists(true_beta_folder):
+        print(f"Error: True beta folder not found: {true_beta_folder}")
+        os.makedirs(true_beta_folder, exist_ok=True)
     
     # Count sampels that alternating solver outperforms least squares
     count_lp_vs_ls = 0      
@@ -404,13 +507,14 @@ def main():
     
     # Pre-defined dimension of metabolites and experimental spectra
     num_points = 120001
+    num_metabolites = 20
 
     # Load Metabolite Dictionary
-    metabolite_files = [os.path.join(data_folder, f"{i}.txt") for i in range(1,21)]
+    metabolite_files = [os.path.join(data_folder, f"{i}.txt") for i in range(1,num_metabolites+1)]
     Xint = load_Xint(num_points, metabolite_files)
 
     # Number of synthetic spectra to run script on 
-    num_files = 10
+    num_files = 50
 
     # Process test cases (for summary printout)
     for i in range(1, num_files + 1):
@@ -439,7 +543,7 @@ def main():
 
     # Print final results
     print(f"\n========== Final Results ==========")
-    print(f"Alternating Solver outperformed Least Squares in {(count_lp_vs_ls/num_files) * 100}% of cases.")
+    print(f"Alternating Solver outperformed Least Squares in {(count_lp_vs_ls/num_files) * 100:.1f}% of cases.")
 
     # Plot RMSE comparison across all samples
     plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list)
