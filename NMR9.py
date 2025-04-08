@@ -86,8 +86,8 @@ def output(beta_lp, beta_ls, true_beta, rmse_lp, rmse_ls, resid_lp_norm, resid_l
 
     # Print RMSE values
     print("\n--- RMSE Values ---")
-    print(f"LP RMSE: {rmse_lp}")
-    print(f"LS RMSE: {rmse_ls}")
+    print(f"LP RMSE : {rmse_lp}")
+    print(f"LS RMSE : {rmse_ls}")
 
     # Print Residual Norms
     print(f"\n--- Residual Norms wrt Y ---")
@@ -109,7 +109,7 @@ def calculate_global_r_squared(all_true_values, all_predicted_values):
     return r**2
 
 # Plotting Functions for a Single Spectrum
-def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
+def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, num_files):
     # Reconstructed spectra
     recon_lp = Xint @ beta_lp + Z_lp
     recon_ls = Xint @ beta_ls
@@ -119,26 +119,25 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     resid_ls = Y - recon_ls
 
     # Figure 1: Overlay and Residuals
-    plt.figure(figsize=(14, 12))
+    plt.figure(figsize=(14, 10))
 
     # Panel A: Spectrum overlay
     plt.subplot(2, 1, 1)
     plt.plot(ppm, Y, 'k', label='Simulated Spectrum')
-    plt.plot(ppm, recon_lp, 'b', label='Low Pass + Baseline')
-    plt.plot(ppm, recon_ls, 'r', label='Least Squares')
+    plt.plot(ppm, recon_lp, 'c', label='Low Pass + Baseline', alpha=0.8)
+    plt.plot(ppm, recon_ls, 'r', label='Least Squares', alpha=0.5)
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
-    plt.title("Figure 1A: Spectrum Fit Comparison")
+    plt.title(f"Spectrum Overlay for Sample {num_files}")
     plt.legend()
 
     # Panel B: Residuals
     plt.subplot(2, 1, 2)
-    plt.plot(ppm, resid_lp, 'b', label='Residual (Low Pass + Baseline)')
-    plt.plot(ppm, resid_ls, 'r', label='Residual (LS)')
-    plt.axhline(0, color='gray', linestyle='--')
+    plt.plot(ppm, resid_lp, 'c', label='Residual (Low Pass + Baseline)', alpha=0.8)
+    plt.plot(ppm, resid_ls, 'r', label='Residual (LS)', alpha=0.5)
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Residual Intensity")
-    plt.title("Figure 1B: Residuals")
+    plt.title("Residuals")
     plt.legend()
     plt.tight_layout()
     plt.show()
@@ -147,7 +146,7 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
 def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     # Reconstructed spectra
     recon_lp = Xint @ beta_lp + Z_lp
-    recon_ls = Xint @ beta_ls
+    recon_ls = Xint @ beta_ls 
 
     # For demonstration, we use the simulated spectrum Y as the "true" spectrum.
     # Find peaks in a zoomed-in region.
@@ -160,18 +159,18 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
 
     plt.figure(figsize=(12, 8))
     plt.plot(ppm_zoom, Y_zoom, 'k-', label='Simulated Spectrum')
-    plt.plot(ppm_zoom, recon_lp_zoom, 'b-', label='Low Pass + Baseline')
-    plt.plot(ppm_zoom, recon_ls_zoom, 'r-', label='Least Squares')
+    plt.plot(ppm_zoom, recon_lp_zoom, 'c-', label='Low Pass + Baseline')
+    plt.plot(ppm_zoom, recon_ls_zoom, 'r-', label='Least Squares', alpha=0.5)
     
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
-    plt.title("Figure 2: Peak Identification in Zoomed Region (4-6 ppm)")
+    plt.title("Peak Identification in Zoomed Region (4-6 ppm)")
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
     plt.tight_layout()
     plt.show()
 
 # Plotting Functions for Concentration Accuracy
-def plot_concentration_accuracy(true_beta, beta_lp, beta_ls):
+def plot_concentration_accuracy(true_beta, beta_lp, beta_ls, num_files):
     # Scatter plot for predicted vs. true concentrations.
     # Compute R^2 values
     R2_lp = calculate_r_squared(true_beta, beta_lp)
@@ -179,17 +178,17 @@ def plot_concentration_accuracy(true_beta, beta_lp, beta_ls):
 
     plt.figure(figsize=(10, 8))
     plt.plot(true_beta, true_beta, 'k--', label="Identity Line")
-    plt.scatter(true_beta, beta_lp, c='b', label=f"Alternating Solver (R²={R2_lp:.2f})")
-    plt.scatter(true_beta, beta_ls, c='r', label=f"LS (R²={R2_ls:.2f})")
+    plt.scatter(true_beta, beta_lp, c='c', label=f"Alternating Solver (R²={R2_lp:.2f})", alpha=0.8)
+    plt.scatter(true_beta, beta_ls, c='r', label=f"LS (R²={R2_ls:.2f})", alpha = 0.5)
     plt.xlabel("True Concentration")
     plt.ylabel("Predicted Concentration")
-    plt.title("Figure 3: Concentration Prediction Accuracy")
+    plt.title(f"Concentration Prediction Accuracy for Sample {num_files}")
     plt.legend()
     plt.tight_layout()
     plt.show()
 
 # Plotting Functions for Residual/Error per Metabolite
-def plot_residual_error(true_beta, beta_lp, beta_ls):
+def plot_residual_error(true_beta, beta_lp, beta_ls, num_files):
     # Compute absolute errors per metabolite
     error_lp = np.abs(true_beta - beta_lp)
     error_ls = np.abs(true_beta - beta_ls)
@@ -197,18 +196,18 @@ def plot_residual_error(true_beta, beta_lp, beta_ls):
 
     width = 0.35  # width of the bars
     plt.figure(figsize=(12, 8))
-    plt.bar(metabolites - width/2, error_lp, width, color='b', label="Alternating Solver")
-    plt.bar(metabolites + width/2, error_ls, width, color='r', label="LS")
+    plt.bar(metabolites - width/2, error_lp, width, color='c', label="Alternating Solver", alpha=0.8)
+    plt.bar(metabolites + width/2, error_ls, width, color='r', label="LS", alpha=0.5)
     plt.xlabel("Metabolite ID")
     plt.ylabel("Absolute Error")
-    plt.title("Figure 4: Residual/Error per Metabolite")
+    plt.title(f"Residual/Error per Metabolite for Sample {num_files}")
     plt.xticks(metabolites)
     plt.legend()
     plt.tight_layout()
     plt.show()
 
 # Plotting Functions for Performance Metrics
-def plot_performance_metrics(rmse_lp, rmse_ls, true_beta, beta_lp, beta_ls):
+def plot_performance_metrics(rmse_lp, rmse_ls, true_beta, beta_lp, beta_ls, num_files):
     # Compute R^2 values
     R2_lp = calculate_r_squared(true_beta, beta_lp)
     R2_ls = calculate_r_squared(true_beta, beta_ls)
@@ -218,17 +217,17 @@ def plot_performance_metrics(rmse_lp, rmse_ls, true_beta, beta_lp, beta_ls):
     # Panel A: RMSE Comparison
     methods = ["Alternating Solver", "Least Squares"]
     rmse_values = [rmse_lp, rmse_ls]
-    colors = ['b', 'r']
+    colors = ['c', 'r']
     
-    axs[0].bar(methods, rmse_values, color=colors)
+    axs[0].bar(methods, rmse_values, color=['c', (0.8, 0, 0, 0.5)])
     axs[0].set_ylabel("RMSE (Intensity Units)")
-    axs[0].set_title("Figure 5A: RMSE Comparison")
+    axs[0].set_title(f"RMSE Comparison for Sample {num_files}")
     
-    # Panel B: R² Comparison
+    # Panel B: R^2 Comparison
     r2_values = [R2_lp, R2_ls]
-    axs[1].bar(methods, r2_values, color=colors)
+    axs[1].bar(methods, r2_values, color=['c', (0.8, 0, 0, 0.5)])
     axs[1].set_ylabel("R²")
-    axs[1].set_title("Figure 5B: R² Comparison")
+    axs[1].set_title(f"R² Comparison for Sample {num_files}")
     
     plt.tight_layout()
     plt.show()
@@ -283,8 +282,8 @@ def display_summary_tables(num_files, true_beta, beta_lp, beta_ls, rmse_lp, rmse
 def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
     samples = np.arange(1, len(rmse_lp_list)+1)
     plt.figure(figsize=(12, 8))
-    plt.plot(samples, rmse_lp_list, marker='o', linestyle='-', color='blue', label='Alternating Solver')
-    plt.plot(samples, rmse_ls_list, marker='s', linestyle='-', color='red', label='Least Squares')
+    plt.plot(samples, rmse_lp_list, marker='o', linestyle='-', color='c', label='Alternating Solver', alpha=0.8)
+    plt.plot(samples, rmse_ls_list, marker='s', linestyle='-', color='r', label='Least Squares', alpha=0.5)
     plt.xlabel("Sample")
     plt.ylabel("RMSE")
     plt.title("RMSE Comparison Across Samples")
@@ -293,9 +292,45 @@ def plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list):
     plt.grid(True, alpha=0.3)
     plt.show()
 
+# Plot R^2 comparison across all samples
+def plot_r2_comparison_all_samples(r2_lp_list, r2_ls_list):
+    samples = np.arange(1, len(r2_lp_list) + 1)
+    
+    # Calculate running averages
+    running_avg_lp = np.zeros(len(r2_lp_list))
+    running_avg_ls = np.zeros(len(r2_ls_list))
+    
+    # Calculate the running average at each point
+    for i in range(len(r2_lp_list)):
+        running_avg_lp[i] = np.mean(r2_lp_list[:i+1])
+        running_avg_ls[i] = np.mean(r2_ls_list[:i+1])
+    
+    plt.figure(figsize=(12, 8))
+    
+    # Plot running averages
+    plt.plot(samples, running_avg_lp, marker='o', linestyle='-', color='c', 
+             label='Alternating Solver (Running Avg)', alpha=0.8)
+    plt.plot(samples, running_avg_ls, marker='s', linestyle='-', color='r', 
+             label='Least Squares (Running Avg)', alpha=0.5)
+    
+    # Add horizontal lines for final average values
+    plt.axhline(y=running_avg_lp[-1], color='c', linestyle='--', 
+                label=f'Final Avg AS: {running_avg_lp[-1]:.3f}', alpha=0.5)
+    plt.axhline(y=running_avg_ls[-1], color='r', linestyle='--', 
+                label=f'Final Avg LS: {running_avg_ls[-1]:.3f}', alpha=0.3)
+    
+    plt.xlabel("Sample")
+    plt.ylabel("Running Average R²")
+    plt.title("Running Average R² Comparison Across Samples")
+    plt.xlim(0, len(r2_lp_list) + 1)
+    plt.ylim(0, 1.05)  # R² is between 0 and 1
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.show()
+
 # Display a RMSE Table for each sample 
 def display_rmse_table(rmse_lp_list, rmse_ls_list):
-    print("\nRMSE Table:")
+    print(f"\nRMSE Table over {len(rmse_lp_list)} samples:")
     print("Sample \t Low Pass RMSE \t Least Squares RMSE")
     for i in range(len(rmse_lp_list)):
         print(f"{i+1} \t {rmse_lp_list[i]:.3f} \t\t {rmse_ls_list[i]:.3f}")
@@ -351,6 +386,7 @@ def main():
     test_folder = "synthetic_spectrum"
     true_beta_folder = "synthetic_spectrum"
     
+    # Count sampels that alternating solver outperforms least squares
     count_lp_vs_ls = 0      
     
     # Lists to store RMSE values for each sample
@@ -361,6 +397,10 @@ def main():
     all_true_betas = []
     all_beta_lps = []
     all_beta_ls = []
+
+    # Lists to store R^2 values for all samples
+    r2_lp_list = []
+    r2_ls_list = []
     
     # Pre-defined dimension of metabolites and experimental spectra
     num_points = 120001
@@ -370,7 +410,7 @@ def main():
     Xint = load_Xint(num_points, metabolite_files)
 
     # Number of synthetic spectra to run script on 
-    num_files = 5
+    num_files = 10
 
     # Process test cases (for summary printout)
     for i in range(1, num_files + 1):
@@ -390,12 +430,20 @@ def main():
         all_beta_lps.append(test_results['beta_lp'])
         all_beta_ls.append(test_results['beta_ls'])
     
+        R2_lp = calculate_r_squared(test_results['true_beta'], test_results['beta_lp'])
+        R2_ls = calculate_r_squared(test_results['true_beta'], test_results['beta_ls'])
+
+        # Append R^2 values to the lists
+        r2_lp_list.append(R2_lp)
+        r2_ls_list.append(R2_ls)
+
     # Print final results
     print(f"\n========== Final Results ==========")
     print(f"Alternating Solver outperformed Least Squares in {(count_lp_vs_ls/num_files) * 100}% of cases.")
-    
+
     # Plot RMSE comparison across all samples
     plot_rmse_comparison_all_samples(rmse_lp_list, rmse_ls_list)
+    plot_r2_comparison_all_samples(r2_lp_list, r2_ls_list)
     display_rmse_table(rmse_lp_list, rmse_ls_list)
     
     # For demonstration, use the results from the last test case for single spectrum plots and concentration table
@@ -410,11 +458,11 @@ def main():
     ppm = np.linspace(10, -2, len(Y))
     
     # Generate Figures for a single spectrum
-    plot_spectrum_fit_comparison(Y, Xint, beta_lp, results['Z_lp'], beta_ls, ppm)
+    plot_spectrum_fit_comparison(Y, Xint, beta_lp, results['Z_lp'], beta_ls, ppm, num_files)
     plot_peak_identification(Y, Xint, beta_lp, results['Z_lp'], beta_ls, ppm)
-    plot_concentration_accuracy(true_beta, beta_lp, beta_ls)
-    plot_residual_error(true_beta, beta_lp, beta_ls)
-    plot_performance_metrics(results['rmse_lp'], results['rmse_ls'], true_beta, beta_lp, beta_ls)
+    plot_concentration_accuracy(true_beta, beta_lp, beta_ls, num_files)
+    plot_residual_error(true_beta, beta_lp, beta_ls, num_files)
+    plot_performance_metrics(results['rmse_lp'], results['rmse_ls'], true_beta, beta_lp, beta_ls, num_files)
     
     # Display summary tables with global R² values across all samples
     display_summary_tables(num_files, true_beta, beta_lp, beta_ls, 
