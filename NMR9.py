@@ -521,6 +521,14 @@ def main():
         print(f"\n\n========== Processing Test Case {i} ==========")
         test_file = f"synthetic_spectrum_{i}.txt"
         true_beta_file = f"spectrum_ratios_{i}.txt"
+
+        # Check if test files exist
+        if not os.path.exists(os.path.join(test_folder, test_file)):
+            raise FileNotFoundError(f"Test file not found: {os.path.join(test_folder, test_file)}")
+
+        if not os.path.exists(os.path.join(true_beta_folder, true_beta_file)):
+            raise FileNotFoundError(f"True beta file not found: {os.path.join(true_beta_folder, true_beta_file)}")
+
         count_lp_vs_ls, test_results = test(
             Xint, num_points, test_folder, test_file, true_beta_folder, true_beta_file, 
             count_lp_vs_ls)
