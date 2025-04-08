@@ -1,6 +1,5 @@
 for j in np.arange(0.01, 0.5, 0.05):
     for k in range(2, 9):
-
 ========== Sorted Scores ==========
 Cutoff Frequency: 0.41000000000000003, Filter Order: 8, Score: 7.44474166150255
 Cutoff Frequency: 0.41000000000000003, Filter Order: 7, Score: 7.444741661481179
@@ -79,3 +78,116 @@ Cutoff Frequency: 0.01, Filter Order: 5, Score: 0.1515169017289811
 Cutoff Frequency: 0.01, Filter Order: 4, Score: 0.14720105478471673
 Cutoff Frequency: 0.01, Filter Order: 2, Score: 0.14338219173790917
 Cutoff Frequency: 0.01, Filter Order: 3, Score: 0.13789839600638742
+
+
+
+for j in np.arange(0.001, 0.03, 0.005):
+    for k in range(2, 4):
+========== Sorted Scores ==========
+Cutoff Frequency: 0.001, Filter Order: 3, Score: 2.2387780207145025
+Cutoff Frequency: 0.001, Filter Order: 2, Score: 2.182654351554162
+Cutoff Frequency: 0.026000000000000002, Filter Order: 3, Score: 0.7009352114516681
+Cutoff Frequency: 0.026000000000000002, Filter Order: 2, Score: 0.525878082580196
+Cutoff Frequency: 0.021, Filter Order: 3, Score: 0.30307555504634065
+Cutoff Frequency: 0.006, Filter Order: 3, Score: 0.2712841405423961
+Cutoff Frequency: 0.021, Filter Order: 2, Score: 0.22209370436409312
+Cutoff Frequency: 0.006, Filter Order: 2, Score: 0.21004057411677077
+Cutoff Frequency: 0.011, Filter Order: 2, Score: 0.1255538002147778
+Cutoff Frequency: 0.011, Filter Order: 3, Score: 0.11694869682967005
+Cutoff Frequency: 0.016, Filter Order: 3, Score: 0.10615873109326872
+Cutoff Frequency: 0.016, Filter Order: 2, Score: 0.09547627685611385
+
+
+
+
+
+for j in np.arange(0.010, 0.020, 0.001):
+    for k in range(2, 5):
+========== Sorted Scores ==========
+Cutoff Frequency: 0.018999999999999993, Filter Order: 4, Score: 0.34209311939262016
+Cutoff Frequency: 0.017999999999999995, Filter Order: 4, Score: 0.31814064401726816
+Cutoff Frequency: 0.016999999999999994, Filter Order: 4, Score: 0.2801684731047423
+Cutoff Frequency: 0.018999999999999993, Filter Order: 3, Score: 0.23843931093239262
+Cutoff Frequency: 0.015999999999999993, Filter Order: 4, Score: 0.226909654584792
+Cutoff Frequency: 0.017999999999999995, Filter Order: 3, Score: 0.21077568972432625
+Cutoff Frequency: 0.016999999999999994, Filter Order: 3, Score: 0.17353141926922577
+Cutoff Frequency: 0.014999999999999996, Filter Order: 4, Score: 0.15276408111722262
+Cutoff Frequency: 0.015999999999999993, Filter Order: 3, Score: 0.12635590626998783
+Cutoff Frequency: 0.018999999999999993, Filter Order: 2, Score: 0.08147458470398122
+Cutoff Frequency: 0.014999999999999996, Filter Order: 3, Score: 0.07358398160168075
+Cutoff Frequency: 0.013999999999999997, Filter Order: 4, Score: 0.07354276062540283
+Cutoff Frequency: 0.017999999999999995, Filter Order: 2, Score: 0.05808157306447636
+Cutoff Frequency: 0.012999999999999998, Filter Order: 4, Score: 0.05783534385055688
+Cutoff Frequency: 0.01, Filter Order: 3, Score: 0.052529329689088515
+Cutoff Frequency: 0.01, Filter Order: 2, Score: 0.05186214647437034
+Cutoff Frequency: 0.013999999999999997, Filter Order: 3, Score: 0.050269743060375696
+Cutoff Frequency: 0.011999999999999999, Filter Order: 4, Score: 0.04918893034857889
+Cutoff Frequency: 0.012999999999999998, Filter Order: 3, Score: 0.04611384224103975
+Cutoff Frequency: 0.01, Filter Order: 4, Score: 0.04437161147866643
+Cutoff Frequency: 0.011999999999999999, Filter Order: 3, Score: 0.03948529731631425
+Cutoff Frequency: 0.011, Filter Order: 4, Score: 0.038435014065085295
+Cutoff Frequency: 0.016999999999999994, Filter Order: 2, Score: 0.03808530658018392
+Cutoff Frequency: 0.011, Filter Order: 2, Score: 0.03702771706688895
+Cutoff Frequency: 0.015999999999999993, Filter Order: 2, Score: 0.03334223980649749
+Cutoff Frequency: 0.011, Filter Order: 3, Score: 0.032515102180720935
+Cutoff Frequency: 0.014999999999999996, Filter Order: 2, Score: 0.03059222074655215
+Cutoff Frequency: 0.013999999999999997, Filter Order: 2, Score: 0.02736833466775953
+Cutoff Frequency: 0.011999999999999999, Filter Order: 2, Score: 0.026806208834232063
+Cutoff Frequency: 0.012999999999999998, Filter Order: 2, Score: 0.024863143403158417
+
+
+
+
+for j in np.arange(0.010, 0.015, 0.0001):
+    for k in range(2,3):
+========== Sorted Scores ==========
+Cutoff Frequency: 0.01, Filter Order: 2, Score: 0.05186214647437034
+Cutoff Frequency: 0.0101, Filter Order: 2, Score: 0.05032946904143732
+Cutoff Frequency: 0.010199999999999999, Filter Order: 2, Score: 0.04879733212579088
+Cutoff Frequency: 0.010299999999999998, Filter Order: 2, Score: 0.047270012616688756
+Cutoff Frequency: 0.010399999999999998, Filter Order: 2, Score: 0.045751557406540334
+Cutoff Frequency: 0.010499999999999997, Filter Order: 2, Score: 0.044245758031199206
+Cutoff Frequency: 0.010599999999999997, Filter Order: 2, Score: 0.042756157084185537
+Cutoff Frequency: 0.010699999999999996, Filter Order: 2, Score: 0.041286067573380866
+Cutoff Frequency: 0.010799999999999995, Filter Order: 2, Score: 0.03983867522985622
+Cutoff Frequency: 0.010899999999999995, Filter Order: 2, Score: 0.038417213539958875
+Cutoff Frequency: 0.010999999999999994, Filter Order: 2, Score: 0.03702771706689439
+Cutoff Frequency: 0.011099999999999994, Filter Order: 2, Score: 0.03562626105771975
+Cutoff Frequency: 0.011199999999999993, Filter Order: 2, Score: 0.03430307160412928
+Cutoff Frequency: 0.011299999999999992, Filter Order: 2, Score: 0.03306102543974259
+Cutoff Frequency: 0.011399999999999992, Filter Order: 2, Score: 0.031902750111322806
+Cutoff Frequency: 0.011499999999999991, Filter Order: 2, Score: 0.030830579278623024
+Cutoff Frequency: 0.01489999999999997, Filter Order: 2, Score: 0.030283796698685302
+Cutoff Frequency: 0.014799999999999971, Filter Order: 2, Score: 0.029970710470392257
+Cutoff Frequency: 0.01159999999999999, Filter Order: 2, Score: 0.029846452458711103
+Cutoff Frequency: 0.014699999999999972, Filter Order: 2, Score: 0.029653170361002117
+Cutoff Frequency: 0.014599999999999972, Filter Order: 2, Score: 0.02933162116743222
+Cutoff Frequency: 0.014499999999999973, Filter Order: 2, Score: 0.02900690212772105
+Cutoff Frequency: 0.01169999999999999, Filter Order: 2, Score: 0.028951829670024062
+Cutoff Frequency: 0.014399999999999974, Filter Order: 2, Score: 0.02867954193993029
+Cutoff Frequency: 0.014299999999999974, Filter Order: 2, Score: 0.028350798632164907
+Cutoff Frequency: 0.01179999999999999, Filter Order: 2, Score: 0.02814767850973838
+Cutoff Frequency: 0.014199999999999975, Filter Order: 2, Score: 0.02802161279751968
+Cutoff Frequency: 0.014099999999999975, Filter Order: 2, Score: 0.0276936475953026
+Cutoff Frequency: 0.011899999999999989, Filter Order: 2, Score: 0.027432271074350284
+Cutoff Frequency: 0.013999999999999976, Filter Order: 2, Score: 0.027368334667815682
+Cutoff Frequency: 0.013899999999999977, Filter Order: 2, Score: 0.027047861601331713
+Cutoff Frequency: 0.011999999999999988, Filter Order: 2, Score: 0.026806208834244272
+Cutoff Frequency: 0.013799999999999977, Filter Order: 2, Score: 0.026734294555931636
+Cutoff Frequency: 0.013699999999999978, Filter Order: 2, Score: 0.02643029836799914
+Cutoff Frequency: 0.012099999999999988, Filter Order: 2, Score: 0.02626904090015659
+Cutoff Frequency: 0.013599999999999978, Filter Order: 2, Score: 0.02613881316621182
+Cutoff Frequency: 0.013499999999999979, Filter Order: 2, Score: 0.025863039838388467
+Cutoff Frequency: 0.012199999999999987, Filter Order: 2, Score: 0.02581863311076761
+Cutoff Frequency: 0.01339999999999998, Filter Order: 2, Score: 0.02560679112404614
+Cutoff Frequency: 0.012299999999999986, Filter Order: 2, Score: 0.025452105369570262
+Cutoff Frequency: 0.01329999999999998, Filter Order: 2, Score: 0.02537404473521508
+Cutoff Frequency: 0.01319999999999998, Filter Order: 2, Score: 0.02516921835270647
+Cutoff Frequency: 0.012399999999999986, Filter Order: 2, Score: 0.025165834859879548
+Cutoff Frequency: 0.013099999999999981, Filter Order: 2, Score: 0.02499722799000037
+Cutoff Frequency: 0.012499999999999985, Filter Order: 2, Score: 0.024955581939482503
+Cutoff Frequency: 0.012999999999999982, Filter Order: 2, Score: 0.02486314340320629
+Cutoff Frequency: 0.012599999999999984, Filter Order: 2, Score: 0.02481653619439445
+Cutoff Frequency: 0.012899999999999983, Filter Order: 2, Score: 0.02477235459430453
+Cutoff Frequency: 0.012699999999999984, Filter Order: 2, Score: 0.0247433659607676
+Cutoff Frequency: 0.012799999999999983, Filter Order: 2, Score: 0.024730517381640945

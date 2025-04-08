@@ -93,8 +93,8 @@ def main():
     scores = {}
 
     # Process test cases (for summary printout)
-    for j in np.arange(0.010, 0.015, 0.001):
-        for k in range(2,3):
+    for j in np.arange(0.010, 0.015, 0.0001):
+        for k in range(2,5):
             for i in range(1, 26):
                 test_file = f"synthetic_spectrum_{i}.txt"
                 true_beta_file = f"spectrum_ratios_{i}.txt"
