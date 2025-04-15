@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 # Function to plot row vectors from .txt files (experimental EVs)
 def plot_txt_files(folder_path):
+    ppm = np.linspace(-2, 10, 32768)  
     for file_name in os.listdir(folder_path):
         if file_name.endswith('.txt'):
             file_path = os.path.join(folder_path, file_name)
@@ -17,7 +18,8 @@ def plot_txt_files(folder_path):
                         
                         # Plot the vector
                         plt.figure(figsize=(10, 6))
-                        plt.plot(vector, label=file_name, color='b', linewidth=1.5)
+                        plt.plot(ppm,vector, label=file_name, color='b', linewidth=1.5)
+                        plt.gca().invert_xaxis()
                         plt.title(f"Plot of {file_name}")
                         plt.xlabel("Index")
                         plt.ylabel("Value")

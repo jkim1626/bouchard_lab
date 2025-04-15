@@ -158,6 +158,7 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, num_files
 
     # Panel A: Spectrum overlay
     plt.subplot(2, 1, 1)
+    plt.gca().invert_xaxis()
     plt.plot(ppm, Y, 'k', label='Simulated Spectrum')
     plt.plot(ppm, recon_lp, 'c', label='Low Pass + Baseline', alpha=0.8)
     plt.plot(ppm, recon_ls, 'r', label='Least Squares', alpha=0.5)
@@ -168,6 +169,7 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, num_files
 
     # Panel B: Residuals
     plt.subplot(2, 1, 2)
+    plt.gca().invert_xaxis()
     plt.plot(ppm, resid_lp, 'c', label='Residual (Low Pass + Baseline)', alpha=0.8)
     plt.plot(ppm, resid_ls, 'r', label='Residual (LS)', alpha=0.5)
     plt.xlabel("Chemical Shift (ppm)")
@@ -188,8 +190,7 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     recon_ls = Xint @ beta_ls 
 
     # For demonstration, we use the simulated spectrum Y as the "true" spectrum.
-    # Find peaks in a zoomed-in region.
-    # Let's choose a zoom region from 4 to 6 ppm.
+    # Find peaks in a zoomed-in region from 2 to 4 ppm.
     idx_zoom = np.where((ppm >= 2) & (ppm <= 4))[0]
     ppm_zoom = ppm[idx_zoom]
     Y_zoom = Y[idx_zoom]
@@ -197,9 +198,10 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm):
     recon_ls_zoom = recon_ls[idx_zoom]
 
     plt.figure(figsize=(12, 8))
+    plt.gca().invert_xaxis()
     plt.plot(ppm_zoom, Y_zoom, 'k-', label='Simulated Spectrum')
-    plt.plot(ppm_zoom, recon_lp_zoom, 'c-', label='Low Pass + Baseline')
-    plt.plot(ppm_zoom, recon_ls_zoom, 'r-', label='Least Squares', alpha=0.5)
+    plt.plot(ppm_zoom, recon_ls_zoom, 'r-', linestyle='-', label='Least Squares', alpha=0.5)
+    plt.plot(ppm_zoom, recon_lp_zoom, 'c-', linestyle='-', label='Low Pass + Baseline')
     
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
@@ -567,7 +569,7 @@ def main():
     true_beta = results['true_beta']
     
     # Generate ppm scale (assumes 120001 points spanning -2 to 10 ppm)
-    ppm = np.linspace(10, -2, len(Y))
+    ppm = np.linspace(-2, 10, len(Y))
     
     # Generate Figures for a single spectrum
     plot_spectrum_fit_comparison(Y, Xint, beta_lp, results['Z_lp'], beta_ls, ppm, num_files)
