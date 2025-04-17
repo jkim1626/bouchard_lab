@@ -1,0 +1,9 @@
+1.txt = ESC_1.txt
+2.txt = ESC_2.txt
+3.txt = ESC_3.txt
+4.txt = HMSC_1.txt
+5.txt = HMSC_2.txt
+6.txt = HMSC_3.txt
+7.txt = iPSC_1.txt
+8.txt = iPSC_2.txt
+9.txt = iPSC_3.txt

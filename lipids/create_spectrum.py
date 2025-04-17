@@ -1,7 +1,6 @@
 import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 import re
 
 def parse_nmrml_peak_list(nmrml_file):
@@ -67,26 +66,9 @@ def simulate_spectrum(peaks, axis_ppm):
 
 def main():
     # Define the file path
-    lipids = [
-        "Lysophosphatidylcholine",
-        "Phosphatidylcholine",
-        "Lysophosphatidylethanolamine",
-        "Phosphatidylethanolamine",
-        "Phosphatidylinositol",
-        "Cardiolipin",
-        "Sphingomyelin",
-        "Ceramide",
-        "Glycosylceramide",
-        "Diglycosylceramide",
-        "Triglycosylceramide",
-        "Ganglioside",
-        "Sulfatide",
-        "Diacylglycerol",
-        "Triacylglycerol",
-        "Cholesterolester"
-    ]
-    nmrml_file = "800_NP0092279_1h.nmrML"
-    
+    nmrml_file = "9.nmrML"
+    spectrum_output_file = "9.txt"
+
     # Define the chemical shift axis (32768 points from 10 ppm to -2 ppm)
     axis_ppm = np.linspace(10, -2, 32768)
     
@@ -124,8 +106,15 @@ def main():
     plt.tight_layout()
     plt.show()
     
-    # Return the spectrum as a row vector
-    return spectrum
+
+    # Save the spectrum as a row vector to a CSV file
+    try:
+        np.savetxt(spectrum_output_file, spectrum.reshape(1, -1), delimiter=",", fmt="%.10f")
+        print(f"Spectrum saved as a row vector to {spectrum_output_file}")
+    except Exception as e:
+        print(f"Error saving spectrum to file: {e}")
+
+    return spectrum 
 
 if __name__ == "__main__":
     main()
