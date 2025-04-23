@@ -1,3 +1,5 @@
+# DICTIONARY MADE UP OF ALL 5 SPECTRA
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -8,7 +10,7 @@ from pathlib import Path
 
 # Get the desktop path
 DESKTOP_PATH = str(Path.home() / "Desktop")
-FIGURES_PATH = os.path.join(DESKTOP_PATH, "metab_samples_2")
+FIGURES_PATH = os.path.join(DESKTOP_PATH, "metab_samples_3")
 
 # Create the figures directory if it doesn't exist
 os.makedirs(FIGURES_PATH, exist_ok=True)
@@ -104,16 +106,16 @@ def plot_spectrum_fit_comparison(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, num):
     # Spectrum overlay
     plt.figure(figsize=(14, 10))
     plt.plot(ppm, Y, 'k', label='EV Sample')
-    plt.plot(ppm, recon_lp, 'c', label='Low Pass', alpha=0.8)
     plt.plot(ppm, recon_ls, 'r', label='Least Squares', alpha=0.5)
+    plt.plot(ppm, recon_lp, 'c', label='Low Pass', alpha=0.8)
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
     plt.title(f"Spectrum Overlay for Sample {num}")
     plt.legend()
     
     # Save the figure
-    save_figure(f"EV_sample_{num}_overlay")
-    print(f"Figure saved as EV_sample_{num}_overlay.pdf")
+    save_figure(f"Sample_{num}_overlay")
+    print(f"Figure saved as Sample_{num}_overlay.pdf")
 
     # plt.show()
 
@@ -132,8 +134,9 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, idx):
 
     plt.figure(figsize=(12, 8))
     plt.plot(ppm_zoom, Y_zoom, 'k-', label='EV Sample')
-    plt.plot(ppm_zoom, recon_lp_zoom, 'c-', label='Low Pass')
     plt.plot(ppm_zoom, recon_ls_zoom, 'r-', label='Least Squares', alpha=0.5)
+    plt.plot(ppm_zoom, recon_lp_zoom, 'c-', label='Low Pass')
+
     
     plt.xlabel("Chemical Shift (ppm)")
     plt.ylabel("Intensity")
@@ -142,8 +145,8 @@ def plot_peak_identification(Y, Xint, beta_lp, Z_lp, beta_ls, ppm, idx):
     plt.tight_layout()
     
     # Save the figure
-    save_figure(f"EV_sample_{idx}_overlay_zoomed")
-    print(f"Figure saved as EV_sample_{idx}_overlay.pdf")
+    save_figure(f"Sample_{idx}_overlay_zoomed")
+    print(f"Figure saved as Sample_{idx}_overlay_zoomed.pdf")
     
     # plt.show()
 
@@ -219,10 +222,10 @@ def main():
             test_results['beta_lp'], test_results['Z_lp'], 
             test_results['beta_ls'], ppm, i)
         
-        """plot_peak_identification(
+        plot_peak_identification(
             test_results['Y'], test_results['Xint'], 
             test_results['beta_lp'], test_results['Z_lp'], 
-            test_results['beta_ls'], ppm, i)"""
+            test_results['beta_ls'], ppm, i)
         
         # Print beta coefficients from algorithm
         print(test_results['beta_lp'])
