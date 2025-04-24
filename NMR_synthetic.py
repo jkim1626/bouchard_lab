@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import butter, filtfilt
 from scipy.optimize import nnls
 from pathlib import Path
+from sklearn.linear_model import Lasso
 
 # Get the desktop path
 DESKTOP_PATH = str(Path.home() / "Desktop")
@@ -24,7 +25,7 @@ def butter_lowpass_filter(signal, cutoff_freq, order=4):
     return filtered
 
 # Alternating Solver: (Beta-step) + (Z-step)
-def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=2, max_iter=50, tol=1e-6):
+def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=2, alpha_lasso=0.01, sparse_beta=False, max_iter=50, tol=1e-6):
     Y = Y.flatten()
     m, n = X.shape
 
@@ -44,7 +45,13 @@ def alternating_solver(Y, X, cutoff_freq=0.01, filter_order=2, max_iter=50, tol=
     for iteration in range(1, max_iter + 1):
         # (1) Beta-step
         R = Y - Z  # Residual ignoring current baseline
-        beta_new, _ = nnls(X, R)
+
+        if sparse_beta:
+            model = Lasso(alpha=alpha_lasso, fit_intercept=False, max_iter=5000, warm_start=True)
+            model.fit(X, R)
+            beta_new = model.coef_
+        else:
+            beta_new, _ = nnls(X, R)
 
         # (2) Z-step 
         R2 = Y - X @ beta_new  # Residual ignoring new beta fit
@@ -446,7 +453,7 @@ def test(Xint, num_points, test_folder, test_file, true_beta_folder, true_beta_f
     true_beta = np.loadtxt(beta_path, delimiter=',')     
 
     # Run each algorithm
-    beta_lp, Z_lp = alternating_solver(Y, Xint, cutoff_freq=0.0128, filter_order=2, max_iter=50, tol=1e-6)
+    beta_lp, Z_lp = alternating_solver(Y, Xint, cutoff_freq=0.0128, filter_order=2, alpha_lasso=0.01, sparse_beta=False, max_iter=50, tol=1e-6)
     beta_ls, _ = nnls(Xint, Y)
 
     # Calculate scores for all methods

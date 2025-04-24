@@ -87,8 +87,8 @@ def alternating_solver(
 def plot_overlay(y, recon_ls, recon_lp, ppm, tag):
     plt.figure(figsize=(11, 6))
     plt.plot(ppm, y, "k",  label="sample")
-    plt.plot(ppm, recon_ls, "r", alpha=.5, label="NNLS (LS)")
-    plt.plot(ppm, recon_lp, "c", alpha=.8, label="NNLS + baseline")
+    plt.plot(ppm, recon_ls, "r", alpha=.5, label="LS")
+    plt.plot(ppm, recon_lp, "c", alpha=.8, label="LP")
     plt.xlabel("ppm");  plt.ylabel("intensity")
     plt.title(f"Spectrum overlay – {tag}")
     plt.gca().invert_xaxis()
@@ -129,7 +129,7 @@ def main():
         beta_ls, _      = nnls(X_mix, y_no_buffer)
 
         # -- plotting ----------------------------------------------
-        recon_lp = X_mix @ beta_lp + z_lp
+        recon_lp = X_mix @ beta_lp 
         recon_ls = X_mix @ beta_ls                 # LS has no extra baseline
         plot_overlay(y, recon_ls, recon_lp, ppm, tag)
 
